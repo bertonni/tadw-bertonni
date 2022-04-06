@@ -1,0 +1,20 @@
+/* Write your global styles here, in PostCSS syntax */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  .input {
+    @apply text-gray-600 h-10 w-full border rounded bg-transparent transition-colors
+    pl-2 focus:outline-none focus:border-gray-500 focus:border-2;
+  }
+
+  .label {
+    @apply absolute text-gray-400 left-2 transform transition-all duration-300
+			-top-6 peer-placeholder-shown:text-gray-400 peer-focus:left-0 peer-focus:text-gray-500;
+  }
+
+  .active {
+    @apply text-sky-400 border-b-2 border-b-sky-400;
+  }
+}

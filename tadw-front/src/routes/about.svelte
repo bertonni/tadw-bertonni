@@ -1,0 +1,1 @@
+<h1 class="text-xl font-medium text-gray-500">About</h1>
