@@ -11,7 +11,7 @@ const {
 } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
 
-const serviceAccount = require("./tadw-bertonni-firebase-adminsdk-qb2wh-0e20ce02bb.json");
+const serviceAccount = require("./tadw-bertonni-firebase-adminsdk-qb2wh-cf20fbc917.json");
 
 initializeApp({
   credential: cert(serviceAccount),
@@ -19,22 +19,22 @@ initializeApp({
 
 const db = getFirestore();
 
-const getPosts = async () => {
-  const snapshot = await db.collection("posts").get();
-  const posts = [];
+const getPokemon = async (owner) => {
+  const snapshot = await db.collection("pokemon").doc(owner).collection('pokemons').get();
+  const pokemon = [];
   snapshot.forEach((doc) => {
-    posts.push({ id: doc.id, ...doc.data()});
+    pokemon.push({ id: doc.id, ...doc.data()});
   });
-  return posts;
+  return pokemon;
 };
 
-const createPost = async (post) => {
-  const docRef = db.collection("posts");
-  await docRef.doc().set(post);
+const addPokemon = async (pokemon) => {
+  const docRef = db.collection("pokemon").doc(pokemon.owner).collection('pokemons');
+  await docRef.doc().set(pokemon);
 };
 
-const removePost = async (id) => {
-  const res = await db.collection('posts').doc(id).delete();
+const removePokemon = async (id) => {
+  const res = await db.collection('pokemon').doc(id).delete();
 
   console.log('res', res);
 };
@@ -43,13 +43,16 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.get("/posts", (req, res) => {
-  const posts = getPosts()
+app.get("/pokemon", (req, res) => {
+  console.log('re', req);
+  const pokemon = getPokemon(req.owner)
     .then((result) => res.send({ message: 'success', data: result }))
+    .catch((error) => console.log(error));
+  console.log(pokemon);
 });
 
 app.post("/create", (req, res) => {
-  createPost(req.body);
+  addPokemon(req.body);
   res.status(200).send({ message: "added successfuly" });
 });
 

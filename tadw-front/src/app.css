@@ -17,4 +17,16 @@
   .active {
     @apply text-sky-400 border-b-2 border-b-sky-400;
   }
+
+  .disabled {
+    @apply pointer-events-none cursor-not-allowed
+  }
+
+  .hide {
+    @apply hidden;
+  }
+
+  .show {
+    @apply flex;
+  }
 }
