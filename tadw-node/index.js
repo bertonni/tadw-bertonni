@@ -11,7 +11,7 @@ const {
 } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
 
-const serviceAccount = require("./tadw-bertonni-firebase-adminsdk-qb2wh-cf20fbc917.json");
+const serviceAccount = require("./tadw-bertonni-firebase-adminsdk-qb2wh-a069484c33.json");
 
 initializeApp({
   credential: cert(serviceAccount),
@@ -44,11 +44,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get("/pokemon", (req, res) => {
-  console.log('re', req);
-  const pokemon = getPokemon(req.owner)
+  console.log('trainer', req.query.owner);
+  getPokemon(req.query.owner)
+    // .then((result) => console.log(result))
     .then((result) => res.send({ message: 'success', data: result }))
     .catch((error) => console.log(error));
-  console.log(pokemon);
 });
 
 app.post("/create", (req, res) => {

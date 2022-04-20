@@ -22,7 +22,7 @@
 
 <div
 	class="flex flex-col relative rounded shadow hover:shadow-lg px-4 border py-2
-  border-gray-200 w-72"
+  border-gray-200 w-full"
 >
 	{#if $currentUser && owner === $currentUser.email}
 		<div class="absolute flex right-4 top-2 items-center justify-end gap-2">
