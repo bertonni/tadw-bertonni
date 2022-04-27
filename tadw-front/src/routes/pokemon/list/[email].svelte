@@ -25,13 +25,6 @@
 
 	$: owner = $currentUser?.email;
 
-	let hasUpdated = (value) => {
-		updated = value;
-	};
-	let hasDeleted = (value) => {
-		deleted = value;
-	};
-
 	const fetchData = async () => {
 		const url = `http://localhost:5000/pokemon?owner=${owner}`;
 		const response = await fetch(url);
@@ -46,6 +39,6 @@
 
 <div class="grid justify-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
 	{#each pokemons as pokemon}
-		<PokeCard on:removed={fetchData} {hasUpdated} {hasDeleted} {pokemon} />
+		<PokeCard on:removed={fetchData} {pokemon} />
 	{/each}
 </div>

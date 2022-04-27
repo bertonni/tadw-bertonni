@@ -7,7 +7,6 @@
 	export let owner;
 	export let pokemon;
 	export let close;
-	export let hasUpdated;
 
 	let searchedValue = '';
 	let name = pokemon.name;
@@ -87,7 +86,6 @@
 				res.json();
 			})
 			.then((result) => {
-				console.log(result);
 			})
 			.catch((error) => console.log(error))
 			.finally(() => {

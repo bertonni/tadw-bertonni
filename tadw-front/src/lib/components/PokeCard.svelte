@@ -7,8 +7,6 @@
 	const dispatch = createEventDispatcher(); 
 
 	export let pokemon;
-	export let hasUpdated;
-	export let hasDeleted;
 
 	let showEditModal = false;
 	let showTypePopup = false;
@@ -24,7 +22,7 @@
 			fetch(`http://localhost:5000/delete/${pokemon.owner}/${id}`, { method: 'DELETE' })
 				.then((res) => res.json())
 				.then((r) => {
-					hasDeleted(true);
+					console.log(r)
 				})
 				.catch((error) => console.log(error))
 				.finally(() => {
@@ -60,7 +58,7 @@
 		<TypeDetailsPopup type={hoveredType} />
 	{/if}
 	{#if showEditModal}
-		<EditPokemonModal on:update={handleUpdate} owner={pokemon.owner} pokemon={pokemon} close={closeModal} {hasUpdated} />
+		<EditPokemonModal on:update={handleUpdate} owner={pokemon.owner} pokemon={pokemon} close={closeModal} />
 	{/if}
 	{#if $currentUser && pokemon.owner === $currentUser.email}
 		<div class="absolute flex right-4 top-2 items-center justify-end gap-2">

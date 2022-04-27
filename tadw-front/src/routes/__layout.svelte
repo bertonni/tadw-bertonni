@@ -31,7 +31,7 @@
 				{#if item.path !== '/signin' || (item.path === '/signin' && !$currentUser)}
 					<a
 						class="relative py-2 font-medium transform group"
-						class:active={currentPage === item.path}
+						class:active={(currentPage.includes(item.path) && item.path !== '/') || currentPage === item.path }
 						href={item.name === "List" && $currentUser ? '/pokemon/list/' + $currentUser.email : item.path}
 					>
 						<span

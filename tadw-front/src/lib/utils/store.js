@@ -13,6 +13,11 @@ const pokeTypes = [
 		weak_against: ['Fire', 'Water', 'Rock', 'Dragon']
 	},
 	{
+		type: "Normal",
+		strong_against: [],
+		weak_against: ["Rock", "Steel"]
+	},
+	{
 		type: 'Water',
 		strong_against: ['Fire', 'Ground', 'Rock'],
 		weak_against: ['Water', 'Grass', 'Dragon']

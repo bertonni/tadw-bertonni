@@ -55,8 +55,6 @@
 		isValid = cond1 && cond2 && cond3 && cond4;
 	}
 
-	$: console.log(searchedValue);
-
 	const resetForm = () => {
 		name = '';
 		number = parseInt($pokeNumber);
