@@ -18,22 +18,20 @@
 		showEditModal = true;
 	};
 
-	const updatedPokemon = pokemon;
-
-	const fetchData = async () => {
-
-		const url = `http://localhost:5000/pokemon?owner=${pokemon.owner}`;
-		const response = await fetch(url);
-		const result = await response.json();
-	}
-
 	const handleDelete = (id) => {
 		const response = confirm('Are you sure you want to delete this pokemon?');
 		if (response) {
 			fetch(`http://localhost:5000/delete/${pokemon.owner}/${id}`, { method: 'DELETE' })
 				.then((res) => res.json())
-				.then((r) => hasDeleted(true))
-				.catch((error) => console.log(error));
+				.then((r) => {
+					hasDeleted(true);
+				})
+				.catch((error) => console.log(error))
+				.finally(() => {
+					dispatch('removed', {
+						'text': 'pokemon deleted'
+					});
+				})
 		}
 	};
 
