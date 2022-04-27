@@ -61,14 +61,12 @@ const updatePokemon = async (pokemon) => {
 };
 
 const removePokemon = async (owner, id) => {
-  const res = await db
+  await db
     .collection("pokemon")
     .doc(owner)
     .collection("pokemons")
     .doc(id)
     .delete();
-
-  console.log("res", res);
 };
 
 app.use(cors());
@@ -104,7 +102,7 @@ app.get("/pokemon/:owner/:id", (req, res) => {
 });
 
 app.delete("/delete/:owner/:id", (req, res) => {
-  removePokemon(req.params.owner, req.params.id);
+  removePokemon(req.params.owner, req.params.id).then((result) => res.send({ message: 'removed' })).catch((error) => console.log(error));
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
