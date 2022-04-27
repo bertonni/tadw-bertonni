@@ -2,21 +2,43 @@
 	import { goto } from '$app/navigation';
 
 	import { currentUser } from '$lib/utils/store';
+	import EditPokemonModal from './EditPokemonModal.svelte';
+	import TypeDetailsPopup from './TypeDetailsPopup.svelte';
 	export let name;
 	export let owner;
 	export let number;
 	export let level;
-	export let types;
+	export let pokeTypes;
+	export let pokemon;
+	export let hasUpdated;
+	export let hasDeleted;
+
+	let selectedPokemon = pokemon;
+	let showEditModal = false;
+	let showTypePopup = false;
+	let hoveredType = '';
+
+	const handleEdit = () => {
+		showEditModal = true;
+	};
 
 	const handleDelete = (id) => {
 		const response = confirm('Are you sure you want to delete this pokemon?');
 		if (response) {
-			fetch(`http://localhost:5000/delete/${id}`, { method: 'delete' })
+			fetch(`http://localhost:5000/delete/${owner}/${id}`, { method: 'DELETE' })
 				.then((res) => res.json())
-				.then((r) => console.log(r))
-				.catch((error) => console.log(error))
-				.finally(() => goto('/pokemon/list', { replaceState: true }));
+				.then((r) => hasDeleted(true))
+				.catch((error) => console.log(error));
 		}
+	};
+
+	const showTypeDetails = (type) => {
+		hoveredType = type;
+		showTypePopup = true;
+	};
+
+	const closeModal = () => {
+		showEditModal = false;
 	};
 </script>
 
@@ -24,9 +46,16 @@
 	class="flex flex-col relative rounded shadow hover:shadow-lg px-4 border py-2
   border-gray-200 w-full"
 >
+	{#if showTypePopup}
+		<TypeDetailsPopup type={hoveredType} />
+	{/if}
+	{#if showEditModal}
+		<EditPokemonModal {owner} pokemon={selectedPokemon} close={closeModal} {hasUpdated} />
+	{/if}
 	{#if $currentUser && owner === $currentUser.email}
 		<div class="absolute flex right-4 top-2 items-center justify-end gap-2">
 			<button
+				on:click={() => handleEdit()}
 				class="text-sm rounded px-2 bg-gradient-to-r text-gray-50 cursor-pointer
       from-blue-400 to-indigo-500 hover:from-indigo-500 hover:to-blue-400 transition-all"
 			>
@@ -43,10 +72,14 @@
 	{/if}
 	<h1 class="text-xl text-gray-600 font-medium">{name}</h1>
 	<div class="flex items-center justify-between">
-		<p class="text-gray-500 my-4">Level: {level}</p>
+		<p class="text-gray-500 my-4"><span class="font-medium">Level:</span> {level}</p>
 		<div class="flex items-center gap-2">
-			{#each types as type}
-				<span class="text-sm text-emerald-400 font-medium">{type}</span>
+			{#each pokeTypes as type}
+				<span
+					class="text-sm text-emerald-400 font-medium hover:text-emerald-500 cursor-pointer p-2"
+					on:mouseenter={() => showTypeDetails(type)}
+					on:mouseleave={() => (showTypePopup = false)}>{type}</span
+				>
 			{/each}
 		</div>
 	</div>

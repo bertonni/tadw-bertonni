@@ -14,8 +14,8 @@
 	
 	let menus = [
 		{ name: 'Home', path: '/', isLogged: false },
-		{ name: 'Your Pokemon', path: '/pokemon/list/teste', isLogged: false },
-		{ name: 'Add Pokemon', path: '/pokemon/create', isLogged: true },
+		{ name: 'List', path: '/pokemon/list/', isLogged: false },
+		{ name: 'Add', path: '/pokemon/create', isLogged: true },
 		{ name: 'Signin', path: '/signin', isLogged: false }
 	];
 
@@ -24,7 +24,7 @@
 	}
 </script>
 
-<div on:loaded={handleEvent} class="h-screen w-screen flex flex-col">
+<div class="h-screen w-screen flex flex-col">
 	<nav class="h-12 flex items-center gap-2 text-gray-600 justify-between">
 		<div class="flex items-center gap-4 pl-6">
 			{#each menus as item}
@@ -32,7 +32,7 @@
 					<a
 						class="relative py-2 font-medium transform group"
 						class:active={currentPage === item.path}
-						href={item.name === "Your Pokemon" && $currentUser ? '/pokemon/list/' + $currentUser.email : item.path}
+						href={item.name === "List" && $currentUser ? '/pokemon/list/' + $currentUser.email : item.path}
 					>
 						<span
 							class="absolute h-1 bottom-0 border-b-2 border-gray-300 w-0

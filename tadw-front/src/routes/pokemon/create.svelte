@@ -1,12 +1,15 @@
 <script>
 	import Alert from '$lib/components/Alert.svelte';
 	import PokeBadge from '$lib/components/PokeBadge.svelte';
-	import { currentUser } from '$lib/utils/store';
+	import { currentUser, pokeNumber } from '$lib/utils/store';
 
+	let searchedValue = '';
 	let name = '';
 	let types = [];
 	let showOptions = false;
-	let number = 1;
+	let number;
+
+	$: number = parseInt($pokeNumber);
 	let level = 1;
 	let success = false;
 	let isValid = false;
@@ -29,7 +32,20 @@
 		'Dragon',
 		'Dark',
 		'Fairy'
-	];
+	].sort();
+
+	let options = [];
+
+	$: {
+		if (searchedValue !== '') {
+			options = pokemonTypes.filter((type) =>
+				type.toLowerCase().includes(searchedValue.toLowerCase())
+			);
+		} else {
+			options = pokemonTypes;
+		}
+	}
+
 	$: {
 		const cond1 = name.length > 0;
 		const cond2 = number > 0;
@@ -39,15 +55,18 @@
 		isValid = cond1 && cond2 && cond3 && cond4;
 	}
 
+	$: console.log(searchedValue);
+
 	const resetForm = () => {
 		name = '';
-		number = 1;
+		number = parseInt($pokeNumber);
 		level = 1;
 		types = [];
 	};
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
+
 		const pokemon = {
 			owner: $currentUser.email,
 			name,
@@ -61,8 +80,13 @@
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify(pokemon)
 		})
-			.then((res) => res.json())
-			.then((result) => (success = true))
+			.then((res) => {
+				res.json();
+			})
+			.then((result) => {
+				success = true;
+				pokeNumber.set($pokeNumber + 1);
+			})
 			.catch((error) => console.log(error));
 		resetForm();
 	};
@@ -79,13 +103,13 @@
 		if (types.length === 3) {
 			showOptions = false;
 			return;
-		};
+		}
 	};
 
 	const removeType = (e, type) => {
 		e.stopPropagation();
-		types = types.filter((typ) => typ !== type)
-	}
+		types = types.filter((typ) => typ !== type);
+	};
 </script>
 
 <div on:click={() => (showOptions = false)}>
@@ -108,10 +132,11 @@
 			<input
 				bind:value={number}
 				type="number"
-				class="peer input invalid:text-pink-600
-      invalid:border-pink-500"
+				class="peer input invalid:text-pink-600 read-only:bg-gray-50
+      invalid:border-pink-500 pointer-events-none"
 				placeholder="Name"
 				min="1"
+				readonly
 			/>
 			<label for="title" class="label peer-invalid:text-pink-600">Number</label>
 			<p class="invisible peer-invalid:visible text-pink-600 text-right">
@@ -134,6 +159,7 @@
 		</div>
 		<div class="relative z-0 mt-3 w-full group">
 			<input
+				bind:value={searchedValue}
 				type="text"
 				class="peer input invalid:text-pink-600 invalid:border-pink-500 cursor-default"
 				placeholder="Types"
@@ -151,8 +177,10 @@
 				class:show={showOptions}
 				class="absolute top-12 left-0 bg-white w-full flex-col rounded border border-gray-500"
 			>
-				{#each pokemonTypes as type}
-					{#if !types.includes(type)}
+				{#each options as type}
+					{#if !types.includes(type) || (type
+							.toLowerCase()
+							.includes(searchedValue) && searchedValue.toLowerCase() !== '')}
 						<li
 							class="list-none text-gray-600 hover:bg-gray-200 py-1 transition-all pl-2 rounded hover:cursor-pointer"
 							class:disabled={types.length === 3}

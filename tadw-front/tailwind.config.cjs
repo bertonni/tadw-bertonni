@@ -15,6 +15,11 @@ module.exports = {
           from: { 'transform-origin': '0%' },
           to: { 'transform-origin': '50%' }
         }
+      },
+      maxHeight: {
+        '104': '26rem',
+        '112': '28rem',
+        '120': '30rem'
       }
     },
   },
