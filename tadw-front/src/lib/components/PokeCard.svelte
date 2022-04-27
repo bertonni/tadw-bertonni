@@ -1,19 +1,15 @@
 <script>
-	import { goto } from '$app/navigation';
-
 	import { currentUser } from '$lib/utils/store';
+	import { createEventDispatcher } from 'svelte';
 	import EditPokemonModal from './EditPokemonModal.svelte';
 	import TypeDetailsPopup from './TypeDetailsPopup.svelte';
-	export let name;
-	export let owner;
-	export let number;
-	export let level;
-	export let pokeTypes;
+
+	const dispatch = createEventDispatcher(); 
+
 	export let pokemon;
 	export let hasUpdated;
 	export let hasDeleted;
 
-	let selectedPokemon = pokemon;
 	let showEditModal = false;
 	let showTypePopup = false;
 	let hoveredType = '';
@@ -22,15 +18,31 @@
 		showEditModal = true;
 	};
 
+	const updatedPokemon = pokemon;
+
+	const fetchData = async () => {
+
+		const url = `http://localhost:5000/pokemon?owner=${pokemon.owner}`;
+		const response = await fetch(url);
+		const result = await response.json();
+	}
+
 	const handleDelete = (id) => {
 		const response = confirm('Are you sure you want to delete this pokemon?');
 		if (response) {
-			fetch(`http://localhost:5000/delete/${owner}/${id}`, { method: 'DELETE' })
+			fetch(`http://localhost:5000/delete/${pokemon.owner}/${id}`, { method: 'DELETE' })
 				.then((res) => res.json())
 				.then((r) => hasDeleted(true))
 				.catch((error) => console.log(error));
 		}
 	};
+
+	const handleUpdate = async () => {
+		const url = `http://localhost:5000/pokemon/${pokemon.owner}/${pokemon.number}`;
+		const response = await fetch(url);
+		const result = await response.json();
+		pokemon = result.data;
+	}
 
 	const showTypeDetails = (type) => {
 		hoveredType = type;
@@ -50,9 +62,9 @@
 		<TypeDetailsPopup type={hoveredType} />
 	{/if}
 	{#if showEditModal}
-		<EditPokemonModal {owner} pokemon={selectedPokemon} close={closeModal} {hasUpdated} />
+		<EditPokemonModal on:update={handleUpdate} owner={pokemon.owner} pokemon={pokemon} close={closeModal} {hasUpdated} />
 	{/if}
-	{#if $currentUser && owner === $currentUser.email}
+	{#if $currentUser && pokemon.owner === $currentUser.email}
 		<div class="absolute flex right-4 top-2 items-center justify-end gap-2">
 			<button
 				on:click={() => handleEdit()}
@@ -62,7 +74,7 @@
 				Edit
 			</button>
 			<button
-				on:click={() => handleDelete(number)}
+				on:click={() => handleDelete(pokemon.number)}
 				class="text-sm rounded px-2 bg-gradient-to-r text-gray-50 cursor-pointer
         from-red-400 to-pink-500 hover:from-pink-500 hover:to-red-400 transition-all"
 			>
@@ -70,21 +82,20 @@
 			</button>
 		</div>
 	{/if}
-	<h1 class="text-xl text-gray-600 font-medium">{name}</h1>
+	<h1 class="text-xl text-gray-600 font-medium">{pokemon.name}</h1>
 	<div class="flex items-center justify-between">
-		<p class="text-gray-500 my-4"><span class="font-medium">Level:</span> {level}</p>
+		<p class="text-gray-500 my-4"><span class="font-medium">Level:</span> {pokemon.level}</p>
 		<div class="flex items-center gap-2">
-			{#each pokeTypes as type}
+			{#each pokemon.types as type}
 				<span
 					class="text-sm text-emerald-400 font-medium hover:text-emerald-500 cursor-pointer p-2"
 					on:mouseenter={() => showTypeDetails(type)}
-					on:mouseleave={() => (showTypePopup = false)}>{type}</span
-				>
+					on:mouseleave={() => (showTypePopup = false)}>{type}</span>
 			{/each}
 		</div>
 	</div>
 	<span class="absolute bottom-1 right-4 text-right text-gray-600">
 		<span class="font-bold"> Trainer:</span>
-		{owner}
+		{pokemon.owner}
 	</span>
 </div>

@@ -29,4 +29,25 @@
   .show {
     @apply flex;
   }
+  
+  .normal {
+    color: '#A8A77A'
+  }
+  .fire { @apply text-normal }
+  .water { @apply text-water }
+  .electric { @apply text-electric }
+  .grass { @apply text-grass }
+  .ice { @apply text-ice }
+  .fighting { @apply text-fighting }
+  .poison { @apply text-poison }
+  .ground { @apply text-ground }
+  .flying { @apply text-flying }
+  .psychic { @apply text-psychic }
+  .bug { @apply text-bug }
+  .rock { @apply text-rock }
+  .ghost { @apply text-ghost }
+  .dragon { @apply text-dragon }
+  .dark { @apply text-dark }
+  .steel { @apply text-steel }
+  .fairy { @apply text-fairy}
 }

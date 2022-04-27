@@ -1,10 +1,13 @@
 <script>
-  import PokeBadge from "./PokeBadge.svelte";
+	import PokeBadge from './PokeBadge.svelte';
+	import { createEventDispatcher } from 'svelte';
+
+	const dispatch = createEventDispatcher(); 
 
 	export let owner;
 	export let pokemon;
 	export let close;
-  export let hasUpdated;
+	export let hasUpdated;
 
 	let searchedValue = '';
 	let name = pokemon.name;
@@ -12,9 +15,10 @@
 	let showOptions = false;
 	let number = pokemon.number;
 
-	let level = 1;
+	let level = pokemon.level;
 
 	let isValid = false;
+
 	let pokemonTypes = [
 		'Normal',
 		'Fighting',
@@ -66,8 +70,6 @@
 	const handleSubmit = (e) => {
 		e.preventDefault();
 
-    console.log('submitted');
-
 		const pokemon = {
 			owner,
 			name,
@@ -85,11 +87,16 @@
 				res.json();
 			})
 			.then((result) => {
-				hasUpdated(true);
+				console.log(result);
 			})
-			.catch((error) => console.log(error));
+			.catch((error) => console.log(error))
+			.finally(() => {
+				dispatch('update', {
+					'text': 'updated'
+				});
+			})
 		resetForm();
-    close();
+		close();
 	};
 
 	const handleShowOptions = (e) => {
@@ -112,10 +119,7 @@
 	};
 </script>
 
-<div
-	class="bg-black bg-opacity-60 fixed inset-0 flex justify-center z-20"
-	on:click={close}
->
+<div class="bg-black bg-opacity-60 fixed inset-0 flex justify-center z-20" on:click={close}>
 	<div
 		on:click={(e) => e.stopPropagation()}
 		class="rounded bg-white flex flex-col px-4 py-4 max-h-104 w-10/12 max-w-lg mt-10"
@@ -202,7 +206,7 @@
 				<button
 					disabled={!isValid}
 					type="button"
-          on:click={close}
+					on:click={close}
 					class="border rounded bg-gradient-to-r from-rose-500 transition-all
           to-red-500 px-6 py-2 text-white hover:from-red-500 hover:to-rose-500 w-40
             font-medium focus-within:outline-rose-300 disabled:from-gray-400 disabled:to-slate-400"

@@ -16,13 +16,14 @@
 
 <script>
 	import PokeCard from '$lib/components/PokeCard.svelte';
-	import { pokeNumber } from '$lib/utils/store';
+	import { pokeNumber, currentUser } from '$lib/utils/store';
 
 	export let pokemons;
 	export let nextId;
 
-	let updated = false;
-	let deleted = false;
+	let owner
+
+	$: owner = $currentUser?.email;
 
 	let hasUpdated = (value) => {
 		updated = value;
@@ -30,6 +31,7 @@
 	let hasDeleted = (value) => {
 		deleted = value;
 	};
+
 
 	pokeNumber.set(nextId);
 </script>
@@ -42,11 +44,6 @@
 			{hasUpdated}
 			{hasDeleted}
 			{pokemon}
-			owner={pokemon.owner}
-			name={pokemon.name}
-			number={pokemon.number}
-			level={pokemon.level}
-			pokeTypes={pokemon.types}
 		/>
 	{/each}
 </div>
