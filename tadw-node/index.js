@@ -44,6 +44,11 @@ const getPokemon = async (owner, id) => {
   return doc.data();
 };
 
+const addType = async (type) => {
+  const colRef = db.collection("types");
+  await colRef.doc().set(type);
+};
+
 const addPokemon = async (pokemon) => {
   const docRef = db
     .collection("pokemon")
@@ -86,6 +91,11 @@ app.post("/create", (req, res) => {
   addPokemon(req.body);
   res.status(200).send({ message: "added successfuly" });
 });
+
+app.post("/types/add", (req, res) => {
+  addType(req.body);
+  res.status(200).send({ message: "type addes" });
+})
 
 app.put("/update", (req, res) => {
   updatePokemon(req.body);

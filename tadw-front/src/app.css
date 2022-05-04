@@ -30,10 +30,8 @@
     @apply flex;
   }
   
-  .normal {
-    color: '#A8A77A'
-  }
-  .fire { @apply text-normal }
+  .normal { @apply text-normal }
+  .fire { @apply text-fire }
   .water { @apply text-water }
   .electric { @apply text-electric }
   .grass { @apply text-grass }

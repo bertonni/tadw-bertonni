@@ -1,7 +1,9 @@
 <script>
-	import Alert from '$lib/components/Alert.svelte';
+	import AddNewTypeModal from '$lib/components/AddNewTypeModal.svelte';
+import Alert from '$lib/components/Alert.svelte';
 	import PokeBadge from '$lib/components/PokeBadge.svelte';
 	import { currentUser, pokeNumber } from '$lib/utils/store';
+	import { allTypes } from '$lib/utils/types';
 
 	let searchedValue = '';
 	let name = '';
@@ -13,26 +15,9 @@
 	let level = 1;
 	let success = false;
 	let isValid = false;
-	let pokemonTypes = [
-		'Normal',
-		'Fighting',
-		'Flying',
-		'Poison',
-		'Ground',
-		'Rock',
-		'Bug',
-		'Ghost',
-		'Steel',
-		'Fire',
-		'Water',
-		'Grass',
-		'Electric',
-		'Psychic',
-		'Ice',
-		'Dragon',
-		'Dark',
-		'Fairy'
-	].sort();
+	let showAddTypeModal = false;
+
+	let pokemonTypes = allTypes.sort();
 
 	let options = [];
 
@@ -104,6 +89,14 @@
 		}
 	};
 
+	const showAddNewTypeModal = () => {
+		showAddTypeModal = true;
+	}
+	
+	const closeAddNewTypeModal = () => {
+		showAddTypeModal = false;
+	}
+
 	const removeType = (e, type) => {
 		e.stopPropagation();
 		types = types.filter((typ) => typ !== type);
@@ -164,23 +157,34 @@
 				disabled={types.length === 3}
 				on:click={handleShowOptions}
 			/>
-			<label for="title" class="label peer-invalid:text-pink-600">Select the type (max: 3)</label>
+			<label for="title" class="label peer-invalid:text-pink-600">
+				Select the type (max: 3)
+			</label>
 			<div class="flex items-center gap-2 absolute left-2 top-2 bg-white">
 				{#each types as type}
-					<PokeBadge {type} remove={removeType} />
+					<PokeBadge {type} category="" remove={removeType} />
 				{/each}
 			</div>
 			<div
 				class:hide={!showOptions}
 				class:show={showOptions}
-				class="absolute top-12 left-0 bg-white w-full flex-col rounded border border-gray-500"
+				class="absolute top-12 left-0 bg-white w-full flex-col rounded border
+					border-gray-500"
 			>
+				<li
+					class="list-none text-gray-50 hover:bg-sky-300 py-1 transition-all pl-2
+						rounded-t hover:cursor-pointer bg-sky-400"
+					on:click={() => showAddNewTypeModal()}
+				>
+					Adicionar Novo Tipo
+				</li>
 				{#each options as type}
 					{#if !types.includes(type) || (type
 							.toLowerCase()
 							.includes(searchedValue) && searchedValue.toLowerCase() !== '')}
 						<li
-							class="list-none text-gray-600 hover:bg-gray-200 py-1 transition-all pl-2 rounded hover:cursor-pointer"
+							class="list-none text-gray-600 hover:bg-gray-200 py-1 transition-all
+								pl-2 rounded hover:cursor-pointer"
 							class:disabled={types.length === 3}
 							on:click={(e) => addType(e, type)}
 						>
@@ -195,13 +199,17 @@
 				disabled={!isValid}
 				type="submit"
 				class="border rounded bg-gradient-to-r from-sky-500 transition-all
-				to-blue-500 px-6 py-2 text-white hover:from-blue-500 hover:to-sky-500 w-40
-					font-medium focus-within:outline-sky-300 disabled:from-gray-400 disabled:to-slate-400"
+				to-blue-500 px-6 py-2 text-white hover:from-blue-500 hover:to-sky-500
+					w-40 font-medium focus-within:outline-sky-300 disabled:from-gray-400
+					disabled:to-slate-400"
 			>
 				Submit
 			</button>
 		</div>
 	</form>
+	{#if showAddTypeModal}
+		<AddNewTypeModal close={closeAddNewTypeModal} />
+	{/if}
 	<div class="flex justify-center items-center mt-6">
 		<Alert
 			show={success}

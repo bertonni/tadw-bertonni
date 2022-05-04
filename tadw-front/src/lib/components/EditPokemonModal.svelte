@@ -1,9 +1,11 @@
 <script>
 	import PokeBadge from './PokeBadge.svelte';
+	import { allTypes } from "$lib/utils/types";
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher(); 
 
+	
 	export let owner;
 	export let pokemon;
 	export let close;
@@ -17,27 +19,7 @@
 	let level = pokemon.level;
 
 	let isValid = false;
-
-	let pokemonTypes = [
-		'Normal',
-		'Fighting',
-		'Flying',
-		'Poison',
-		'Ground',
-		'Rock',
-		'Bug',
-		'Ghost',
-		'Steel',
-		'Fire',
-		'Water',
-		'Grass',
-		'Electric',
-		'Psychic',
-		'Ice',
-		'Dragon',
-		'Dark',
-		'Fairy'
-	].sort();
+	let pokemonTypes = allTypes.sort();
 
 	let options = [];
 
@@ -111,7 +93,7 @@
 		}
 	};
 
-	const removeType = (e, type) => {
+	const removeType = (e, category = null, type) => {
 		e.stopPropagation();
 		types = types.filter((typ) => typ !== type);
 	};
@@ -177,7 +159,7 @@
 				<label for="title" class="label peer-invalid:text-pink-600">Select the type (max: 3)</label>
 				<div class="flex items-center gap-2 absolute left-2 top-2 bg-white">
 					{#each types as type}
-						<PokeBadge {type} remove={removeType} />
+						<PokeBadge {type} category="" remove={removeType} />
 					{/each}
 				</div>
 				<div
