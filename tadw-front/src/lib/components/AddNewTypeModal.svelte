@@ -1,6 +1,7 @@
 <script>
 	import { allTypes } from '$lib/utils/types';
 	import PokeBadge from './PokeBadge.svelte';
+	import { types } from '$lib/utils/store';
 
 	export let close;
 
@@ -11,17 +12,21 @@
 	let weakAgainst = [];
 
 	let isValid;
+	let hideWeak = false;
 	let options = allTypes;
 
 	$: {
 		const cond1 = type.length > 3;
-		isValid = cond1;
+		const cond2 = strongAgainst.length <= 5;
+		const cond3 = weakAgainst.length <= 5;
+		isValid = cond1 && cond2 && cond3;
 	}
 
-  $: {
-    console.log(strongAgainst);
-    console.log(weakAgainst);
-  }
+	let weakDivClasses = '';
+
+	$: {
+		weakDivClasses = hideWeak ? 'relative mt-8 w-full group -z-10' : 'relative mt-8 w-full group';
+	}
 
 	const resetForm = () => {
 		type = '';
@@ -50,7 +55,7 @@
 				res.json();
 			})
 			.then((result) => {
-				console.log(result);
+				types.set([...$types, newType]);
 			})
 			.catch((error) => console.log(error));
 		resetForm();
@@ -60,39 +65,51 @@
 	const handleShowStrongAgainstOptions = (e) => {
 		e.stopPropagation();
 		showStrongAgainstOptions = !showStrongAgainstOptions;
+		showWeakAgainstOptions = false;
+		hideWeak = showStrongAgainstOptions;
 	};
 
 	const handleShowWeakAgainstOptions = (e) => {
 		e.stopPropagation();
 		showWeakAgainstOptions = !showWeakAgainstOptions;
+		showStrongAgainstOptions = false;
 	};
 
 	const addType = (e, category, type) => {
 		e.stopPropagation();
 
-    if (category === 'strong') {
-      strongAgainst = [...strongAgainst, type];
-      return;
-    }
+		if (category === 'strong' && strongAgainst.length < 5) {
+			strongAgainst = [...strongAgainst, type];
+			if (strongAgainst.length === 5) showStrongAgainstOptions = false;
+		} else {
+			if (weakAgainst.length < 5) weakAgainst = [...weakAgainst, type];
+			if (weakAgainst.length === 5) showWeakAgainstOptions = false;
+		}
 
-    weakAgainst = [...weakAgainst, type];
 	};
 
-  const removeType = (e, category, type) => {
+	const removeType = (e, category, type) => {
 		e.stopPropagation();
 
-    if (category === 'strong') {
-      strongAgainst = strongAgainst.filter((typ) => typ !== type);
-      return;
-    }
-    weakAgainst = weakAgainst.filter((typ) => typ !== type);
+		if (category === 'strong') {
+			strongAgainst = strongAgainst.filter((typ) => typ !== type);
+			return;
+		}
+		weakAgainst = weakAgainst.filter((typ) => typ !== type);
+	};
+
+	const closeOptions = (e) => {
+		e.stopPropagation();
+		showStrongAgainstOptions = false;
+		showWeakAgainstOptions = false;
+		hideWeak = false;
 	};
 </script>
 
 <div class="bg-black bg-opacity-60 fixed inset-0 flex justify-center z-20" on:click={close}>
 	<div
-		on:click={(e) => e.stopPropagation()}
-		class="rounded bg-white flex flex-col px-4 py-4 max-h-104 w-10/12 max-w-lg mt-10"
+		on:click={(e) => closeOptions(e)}
+		class="rounded bg-white flex flex-col px-4 py-4 max-h-[21rem] w-10/12 max-w-lg mt-10 z-30"
 	>
 		<h1 class="text-2xl font-medium text-gray-500">Add New Type</h1>
 		<form action="#" on:submit={(e) => handleSubmit(e)}>
@@ -116,8 +133,9 @@
 					class="peer input invalid:text-pink-600 invalid:border-pink-500 cursor-default"
 					placeholder="Select"
 					on:click={handleShowStrongAgainstOptions}
+					disabled={strongAgainst.length === 5}
 				/>
-				<label for="title" class="label peer-invalid:text-pink-600">Strong Against</label>
+				<label for="title" class="label peer-invalid:text-pink-600">Strong Against (max: 5)</label>
 				<div class="flex items-center gap-2 absolute left-2 top-2 bg-white flex-wrap">
 					{#each strongAgainst as type}
 						<PokeBadge {type} category="strong" remove={removeType} />
@@ -142,14 +160,15 @@
 					{/each}
 				</div>
 			</div>
-      <div class="relative mt-8 w-full group">
+			<div class={weakDivClasses}>
 				<input
 					type="text"
 					class="peer input invalid:text-pink-600 invalid:border-pink-500 cursor-default"
 					placeholder="Select"
 					on:click={handleShowWeakAgainstOptions}
+					disabled={weakAgainst.length === 5}
 				/>
-				<label for="title" class="label peer-invalid:text-pink-600">Weak Against</label>
+				<label for="title" class="label peer-invalid:text-pink-600">Weak Against (max: 5)</label>
 				<div class="flex items-center gap-2 absolute left-2 top-2 bg-white flex-wrap h-max">
 					{#each weakAgainst as type}
 						<PokeBadge {type} category="weak" remove={removeType} />
@@ -163,7 +182,8 @@
 					{#each options as type}
 						{#if !weakAgainst.includes(type) && !strongAgainst.includes(type)}
 							<li
-								class="list-none text-gray-600 hover:bg-gray-200 py-1 transition-all pl-2 rounded hover:cursor-pointer"
+								class="list-none text-gray-600 hover:bg-gray-200 py-1 transition-all pl-2
+									rounded hover:cursor-pointer"
 								on:click={(e) => addType(e, 'weak', type)}
 							>
 								{type}

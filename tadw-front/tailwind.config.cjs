@@ -1,5 +1,10 @@
 module.exports = {
   content: ['./src/**/*.{html,js,svelte,ts}'],
+  variants: {
+    extend: {
+      visibility: ['group-hover']
+    }
+  },
   theme: {
     extend: {
       animation: {

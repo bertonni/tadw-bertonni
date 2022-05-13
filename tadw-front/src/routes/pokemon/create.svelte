@@ -1,6 +1,6 @@
 <script>
 	import AddNewTypeModal from '$lib/components/AddNewTypeModal.svelte';
-import Alert from '$lib/components/Alert.svelte';
+	import Alert from '$lib/components/Alert.svelte';
 	import PokeBadge from '$lib/components/PokeBadge.svelte';
 	import { currentUser, pokeNumber } from '$lib/utils/store';
 	import { allTypes } from '$lib/utils/types';
@@ -91,15 +91,25 @@ import Alert from '$lib/components/Alert.svelte';
 
 	const showAddNewTypeModal = () => {
 		showAddTypeModal = true;
-	}
-	
+	};
+
 	const closeAddNewTypeModal = () => {
 		showAddTypeModal = false;
-	}
+	};
 
-	const removeType = (e, type) => {
+	const removeType = (e, category, type) => {
 		e.stopPropagation();
 		types = types.filter((typ) => typ !== type);
+	};
+
+	const editType = (e, type) => {
+		e.stopPropagation();
+		console.log('edit', type);
+	};
+
+	const deleteType = (e, type) => {
+		e.stopPropagation();
+		console.log('delete', type);
 	};
 </script>
 
@@ -148,7 +158,7 @@ import Alert from '$lib/components/Alert.svelte';
 				Level must be greater than 0
 			</p>
 		</div>
-		<div class="relative z-0 mt-3 w-full group">
+		<div class="relative z-0 mt-3 w-full">
 			<input
 				bind:value={searchedValue}
 				type="text"
@@ -157,9 +167,7 @@ import Alert from '$lib/components/Alert.svelte';
 				disabled={types.length === 3}
 				on:click={handleShowOptions}
 			/>
-			<label for="title" class="label peer-invalid:text-pink-600">
-				Select the type (max: 3)
-			</label>
+			<label for="title" class="label peer-invalid:text-pink-600"> Select the type (max: 3) </label>
 			<div class="flex items-center gap-2 absolute left-2 top-2 bg-white">
 				{#each types as type}
 					<PokeBadge {type} category="" remove={removeType} />
@@ -182,14 +190,30 @@ import Alert from '$lib/components/Alert.svelte';
 					{#if !types.includes(type) || (type
 							.toLowerCase()
 							.includes(searchedValue) && searchedValue.toLowerCase() !== '')}
-						<li
-							class="list-none text-gray-600 hover:bg-gray-200 py-1 transition-all
-								pl-2 rounded hover:cursor-pointer"
-							class:disabled={types.length === 3}
-							on:click={(e) => addType(e, type)}
+						<div
+							class="flex items-center w-full hover:bg-gray-200 py-1
+								transition-all pl-2"
 						>
-							{type}
-						</li>
+							<div
+								class="flex items-center justify-between text-gray-600 rounded w-full group"
+								class:disabled={types.length === 3}
+								on:click={(e) => addType(e, type)}
+							>
+								<span> {type} </span>
+								<div
+									class="items-center text-xs gap-2 pr-2 invisible group-hover:visible"
+								>
+									<span
+										class="z-10 px-2 border border-sky-600 bg-sky-400 text-gray-50
+											rounded-full hover:cursor-pointer hover:bg-sky-500"
+										on:click={(e) => editType(e, type)}>Edit</span>
+									<span
+										class="z-10 px-2 border border-rose-600 bg-rose-400 text-gray-50
+											rounded-full hover:cursor-pointer hover:bg-rose-500"
+										on:click={(e) => deleteType(e, type)}>Delete</span>
+								</div>
+							</div>
+						</div>
 					{/if}
 				{/each}
 			</div>
