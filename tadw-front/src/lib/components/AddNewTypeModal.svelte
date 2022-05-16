@@ -1,7 +1,7 @@
 <script>
 	import { allTypes } from '$lib/utils/types';
 	import PokeBadge from './PokeBadge.svelte';
-	import { types } from '$lib/utils/store';
+	import { types, allTypesDetailed } from '$lib/utils/store';
 
 	export let close;
 
@@ -13,7 +13,10 @@
 
 	let isValid;
 	let hideWeak = false;
-	let options = allTypes;
+	let options = $allTypesDetailed.sort((a, b) => {
+		if (a.type < b.type) return -1;
+		return 1;
+	});
 
 	$: {
 		const cond1 = type.length > 3;
@@ -145,16 +148,16 @@
 					class:hide={!showStrongAgainstOptions}
 					class:show={showStrongAgainstOptions}
 					class="absolute top-12 left-0 bg-white w-full flex-col rounded border
-            border-gray-500 z-50"
+            border-gray-500 z-50 max-h-80 overflow-y-auto"
 				>
 					{#each options as type}
-						{#if !strongAgainst.includes(type) && !weakAgainst.includes(type)}
+						{#if !strongAgainst.includes(type.type) && !weakAgainst.includes(type.type)}
 							<li
 								class="list-none text-gray-600 hover:bg-gray-200 py-1 transition-all
                   pl-2 rounded hover:cursor-pointer"
-								on:click={(e) => addType(e, 'strong', type)}
+								on:click={(e) => addType(e, 'strong', type.type)}
 							>
-								{type}
+								{type.type}
 							</li>
 						{/if}
 					{/each}
@@ -177,16 +180,17 @@
 				<div
 					class:hide={!showWeakAgainstOptions}
 					class:show={showWeakAgainstOptions}
-					class="absolute top-12 left-0 bg-white w-full flex-col rounded border border-gray-500"
+					class="absolute top-12 left-0 bg-white w-full flex-col rounded border border-gray-500
+						max-h-80 overflow-y-auto"
 				>
 					{#each options as type}
-						{#if !weakAgainst.includes(type) && !strongAgainst.includes(type)}
+						{#if !weakAgainst.includes(type.type) && !strongAgainst.includes(type.type)}
 							<li
 								class="list-none text-gray-600 hover:bg-gray-200 py-1 transition-all pl-2
 									rounded hover:cursor-pointer"
-								on:click={(e) => addType(e, 'weak', type)}
+								on:click={(e) => addType(e, 'weak', type.type)}
 							>
-								{type}
+								{type.type}
 							</li>
 						{/if}
 					{/each}

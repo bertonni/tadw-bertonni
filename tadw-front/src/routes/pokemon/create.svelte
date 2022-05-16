@@ -2,8 +2,8 @@
 	import AddNewTypeModal from '$lib/components/AddNewTypeModal.svelte';
 	import Alert from '$lib/components/Alert.svelte';
 	import PokeBadge from '$lib/components/PokeBadge.svelte';
-	import { currentUser, pokeNumber } from '$lib/utils/store';
-	import { allTypes } from '$lib/utils/types';
+	import { currentUser, pokeNumber, allTypesDetailed } from '$lib/utils/store';
+	// import { allTypes } from '$lib/utils/types';
 
 	let searchedValue = '';
 	let name = '';
@@ -17,14 +17,17 @@
 	let isValid = false;
 	let showAddTypeModal = false;
 
-	let pokemonTypes = allTypes.sort();
+	let pokemonTypes = $allTypesDetailed.sort((a, b) => {
+		if (a.type < b.type) return -1;
+		return 1;
+	});
 
 	let options = [];
 
 	$: {
 		if (searchedValue !== '') {
 			options = pokemonTypes.filter((type) =>
-				type.toLowerCase().includes(searchedValue.toLowerCase())
+				type.type.toLowerCase().includes(searchedValue.toLowerCase())
 			);
 		} else {
 			options = pokemonTypes;
@@ -187,7 +190,7 @@
 					Adicionar Novo Tipo
 				</li>
 				{#each options as type}
-					{#if !types.includes(type) || (type
+					{#if !types.includes(type.type) || (type.type
 							.toLowerCase()
 							.includes(searchedValue) && searchedValue.toLowerCase() !== '')}
 						<div
@@ -197,20 +200,20 @@
 							<div
 								class="flex items-center justify-between text-gray-600 rounded w-full group"
 								class:disabled={types.length === 3}
-								on:click={(e) => addType(e, type)}
+								on:click={(e) => addType(e, type.type)}
 							>
-								<span> {type} </span>
+								<span> {type.type} </span>
 								<div
 									class="items-center text-xs gap-2 pr-2 invisible group-hover:visible"
 								>
 									<span
 										class="z-10 px-2 border border-sky-600 bg-sky-400 text-gray-50
 											rounded-full hover:cursor-pointer hover:bg-sky-500"
-										on:click={(e) => editType(e, type)}>Edit</span>
+										on:click={(e) => editType(e, type.type)}>Edit</span>
 									<span
 										class="z-10 px-2 border border-rose-600 bg-rose-400 text-gray-50
 											rounded-full hover:cursor-pointer hover:bg-rose-500"
-										on:click={(e) => deleteType(e, type)}>Delete</span>
+										on:click={(e) => deleteType(e, type.type)}>Delete</span>
 								</div>
 							</div>
 						</div>

@@ -1,12 +1,15 @@
 const express = require("express");
 const app = express();
+const { createServer } = require('http');
+const server = createServer(app);
+const { Server } = require("socket.io");
 const bodyParser = require("body-parser");
+const io = new Server(server, { cors: "*" });
 const cors = require("cors");
 const port = 5000;
 
 const {
   initializeApp,
-  applicationDefault,
   cert,
 } = require("firebase-admin/app");
 
@@ -19,6 +22,25 @@ initializeApp({
 });
 
 const db = getFirestore();
+
+io.on('connection', (socket) => {
+  console.log('user connected', socket.id);
+
+  const doc = db.collection('types');
+  const observer = doc.onSnapshot((docSnapshot) => {
+    const types = [];
+    docSnapshot.forEach((document) => {
+      types.push(document.data());
+    });
+    console.log(types.length);
+    io.emit('types', types);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+    observer();
+  })
+})
 
 const getAllPokemon = async (owner) => {
   const snapshot = await db
@@ -115,4 +137,4 @@ app.delete("/delete/:owner/:id", (req, res) => {
   removePokemon(req.params.owner, req.params.id).then((result) => res.send({ message: 'removed' })).catch((error) => console.log(error));
 });
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+server.listen(port, () => console.log(`Listening on port ${port}`));

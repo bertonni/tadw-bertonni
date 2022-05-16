@@ -1,6 +1,13 @@
 import { browser } from '$app/env';
 import { writable } from 'svelte/store';
 import { detailedTypes } from './types';
+import { io } from "$lib/utils/socket";
+
+export const allTypesDetailed = writable([]);
+
+io.on('types', (message) => {
+	allTypesDetailed.set(message);
+});
 
 const storedUsers = browser && localStorage.getItem('postUsers');
 const storedCurrent = browser && localStorage.getItem('currentUser');
