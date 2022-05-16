@@ -14,7 +14,7 @@
 	
 	let menus = [
 		{ name: 'Home', path: '/', isLogged: false },
-		{ name: 'List', path: '/pokemon/list/', isLogged: false },
+		{ name: 'List', path: '/pokemon/list/', isLogged: true },
 		{ name: 'Add', path: '/pokemon/create', isLogged: true },
 		{ name: 'Signin', path: '/signin', isLogged: false }
 	];
@@ -52,9 +52,7 @@
 	</nav>
 
 	<div class="flex-grow px-6 sm:px-20 lg:px-24 py-4">
-		{#if menus.some((item) => item.path === currentPage && item.isLogged && $currentUser)}
-			<slot />
-		{:else if menus.some((item) => item.path === currentPage && item.isLogged && !$currentUser)}
+		{#if menus.some((item) => item.path === currentPage && item.isLogged && !$currentUser)}
 			<p class="text-2xl text-gray-500">You must sign in to access this page</p>
 		{:else}
 			<slot />

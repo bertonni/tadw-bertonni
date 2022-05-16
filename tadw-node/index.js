@@ -15,7 +15,7 @@ const {
 
 const { getFirestore } = require("firebase-admin/firestore");
 
-const serviceAccount = require("./tadw-bertonni-firebase-adminsdk-qb2wh-3229f3dc8e.json");
+const serviceAccount = require("./tadw-bertonni-firebase-adminsdk-qb2wh-a069484c33.json");
 
 initializeApp({
   credential: cert(serviceAccount),
@@ -24,20 +24,16 @@ initializeApp({
 const db = getFirestore();
 
 io.on('connection', (socket) => {
-  console.log('user connected', socket.id);
-
   const doc = db.collection('types');
   const observer = doc.onSnapshot((docSnapshot) => {
     const types = [];
     docSnapshot.forEach((document) => {
       types.push(document.data());
     });
-    console.log(types.length);
     io.emit('types', types);
   });
 
   socket.on('disconnect', () => {
-    console.log('user disconnected');
     observer();
   })
 })
@@ -68,7 +64,17 @@ const getPokemon = async (owner, id) => {
 
 const addType = async (type) => {
   const colRef = db.collection("types");
-  await colRef.doc().set(type);
+  await colRef.doc(type.type).set(type);
+};
+
+const updateType = async (type) => {
+  const colRef = db.collection("types");
+  await colRef.doc(type.type).update(type);
+};
+
+const deleteType = async (type) => {
+  const colRef = db.collection("types");
+  await colRef.doc(type.type).delete();
 };
 
 const addPokemon = async (pokemon) => {
@@ -111,17 +117,28 @@ app.get("/pokemon", (req, res) => {
 
 app.post("/create", (req, res) => {
   addPokemon(req.body);
-  res.status(200).send({ message: "added successfuly" });
+  res.status(200).send({ message: "added successfully" });
 });
 
 app.post("/types/add", (req, res) => {
   addType(req.body);
-  res.status(200).send({ message: "type addes" });
-})
+  res.status(200).send({ message: "type added" });
+});
+
+app.put("/types/update", (req, res) => {
+  updateType(req.body);
+  console.log('update', req.body);
+  res.status(200).send({ message: "type updated" });
+});
+
+app.delete("/types/delete", (req, res) => {
+  deleteType(req.body);
+  res.status(200).send({ message: "type deleted" });
+});
 
 app.put("/update", (req, res) => {
   updatePokemon(req.body);
-  res.status(200).send({ message: "Updated successfuly" });
+  res.status(200).send({ message: "Updated successfully" });
 });
 
 app.get("/pokemon/:owner/:id", (req, res) => {

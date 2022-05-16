@@ -1,9 +1,9 @@
 <script>
 	import AddNewTypeModal from '$lib/components/AddNewTypeModal.svelte';
 	import Alert from '$lib/components/Alert.svelte';
+	import EditTypeModal from '$lib/components/EditTypeModal.svelte';
 	import PokeBadge from '$lib/components/PokeBadge.svelte';
 	import { currentUser, pokeNumber, allTypesDetailed } from '$lib/utils/store';
-	// import { allTypes } from '$lib/utils/types';
 
 	let searchedValue = '';
 	let name = '';
@@ -16,6 +16,8 @@
 	let success = false;
 	let isValid = false;
 	let showAddTypeModal = false;
+	let showEditTypeModal = false;
+	let selectedType = {};
 
 	let pokemonTypes = $allTypesDetailed.sort((a, b) => {
 		if (a.type < b.type) return -1;
@@ -107,12 +109,13 @@
 
 	const editType = (e, type) => {
 		e.stopPropagation();
-		console.log('edit', type);
+		showEditTypeModal = true;
+		selectedType = type;
 	};
 
 	const deleteType = (e, type) => {
 		e.stopPropagation();
-		console.log('delete', type);
+
 	};
 </script>
 
@@ -180,7 +183,7 @@
 				class:hide={!showOptions}
 				class:show={showOptions}
 				class="absolute top-12 left-0 bg-white w-full flex-col rounded border
-					border-gray-500"
+					border-gray-500 max-h-80 overflow-y-auto"
 			>
 				<li
 					class="list-none text-gray-50 hover:bg-sky-300 py-1 transition-all pl-2
@@ -207,13 +210,13 @@
 									class="items-center text-xs gap-2 pr-2 invisible group-hover:visible"
 								>
 									<span
-										class="z-10 px-2 border border-sky-600 bg-sky-400 text-gray-50
-											rounded-full hover:cursor-pointer hover:bg-sky-500"
-										on:click={(e) => editType(e, type.type)}>Edit</span>
+										class="z-10 px-2 py-1 border border-sky-600 bg-sky-400 text-gray-50
+											rounded hover:cursor-pointer hover:bg-sky-500"
+										on:click={(e) => editType(e, type)}>Edit</span>
 									<span
-										class="z-10 px-2 border border-rose-600 bg-rose-400 text-gray-50
-											rounded-full hover:cursor-pointer hover:bg-rose-500"
-										on:click={(e) => deleteType(e, type.type)}>Delete</span>
+										class="z-10 px-2 py-1 border border-rose-600 bg-rose-400 text-gray-50
+											rounded hover:cursor-pointer hover:bg-rose-500"
+										on:click={(e) => deleteType(e, type)}>Delete</span>
 								</div>
 							</div>
 						</div>
@@ -236,6 +239,9 @@
 	</form>
 	{#if showAddTypeModal}
 		<AddNewTypeModal close={closeAddNewTypeModal} />
+	{/if}
+	{#if showEditTypeModal}
+		<EditTypeModal {selectedType} close={() => showEditTypeModal = false} />
 	{/if}
 	<div class="flex justify-center items-center mt-6">
 		<Alert

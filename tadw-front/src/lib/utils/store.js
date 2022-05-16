@@ -1,5 +1,5 @@
 import { browser } from '$app/env';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import { detailedTypes } from './types';
 import { io } from "$lib/utils/socket";
 
@@ -26,6 +26,10 @@ export const currentUser = writable(storedCurrent ? JSON.parse(storedCurrent) : 
 export const pokeNumber = writable(storedPokeNumber ? storedPokeNumber : '1');
 export const types = writable(storedTypes ? JSON.parse(storedTypes) : pokeTypes);
 export const minTypes = writable(storedSimpleTypes ? JSON.parse(storedSimpleTypes) : simpleTypes);
+
+if (get(currentUser)?.name.length > 0) {
+	console.log('logged user');
+}
 
 if (browser) {
 	users.subscribe((usr) => (localStorage.postUsers = JSON.stringify(usr)));

@@ -32,6 +32,7 @@
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		const newUser = {
+			id: getRandomId(),
 			name,
 			email,
 			password
@@ -39,6 +40,17 @@
 		users.set([...$users, newUser]);
 		resetForm();
 	};
+
+	const getRandomId = () => {
+		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890$#';
+		let id = '';
+		for (let i = 0; i < 20; i++) {
+			const randomNumber = Math.floor(Math.random() * characters.length);
+			id += characters[randomNumber];
+		}
+
+		return id;
+	}
 </script>
 
 <div class="flex flex-col items-center">
