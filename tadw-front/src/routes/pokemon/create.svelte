@@ -3,32 +3,29 @@
 	import Alert from '$lib/components/Alert.svelte';
 	import EditTypeModal from '$lib/components/EditTypeModal.svelte';
 	import PokeBadge from '$lib/components/PokeBadge.svelte';
-	import { currentUser, pokeNumber, allTypesDetailed } from '$lib/utils/store';
+	import { currentUser, pokeNumber, allTypesDetailed, pokemonLength } from '$lib/utils/store';
 
 	let searchedValue = '';
 	let name = '';
 	let types = [];
 	let showOptions = false;
 	let number;
-
-	$: number = parseInt($pokeNumber);
 	let level = 1;
 	let success = false;
 	let isValid = false;
 	let showAddTypeModal = false;
 	let showEditTypeModal = false;
 	let selectedType = {};
-
 	let pokemonTypes;
+	let options = [];
 
+	$: number = parseInt($pokemonLength + 1);
 	$: {
 		pokemonTypes = $allTypesDetailed.sort((a, b) => {
 			if (a.type < b.type) return -1;
 			return 1;
 		});
 	}
-
-	let options = [];
 
 	$: {
 		if (searchedValue !== '') {
@@ -60,7 +57,11 @@
 		e.preventDefault();
 
 		const pokemon = {
-			owner: $currentUser.email,
+			trainer: {
+				id: $currentUser.uid,
+				name: $currentUser.displayName,
+				email: $currentUser.email,
+			},
 			name,
 			number,
 			level,
@@ -86,7 +87,6 @@
 	const handleShowOptions = (e) => {
 		e.stopPropagation();
 		showOptions = !showOptions;
-		console.log('clicou');
 	};
 
 	const addType = (e, type) => {
@@ -129,7 +129,6 @@
 				res.json();
 			})
 			.then((result) => {
-				// success = true;
 				console.log('success');
 			})
 			.catch((error) => console.log(error));
@@ -215,10 +214,10 @@
 							.includes(searchedValue) && searchedValue.toLowerCase() !== '')}
 						<div
 							class="flex items-center w-full hover:bg-gray-200 py-1
-								transition-all pl-2"
+								transition-all pl-2 group"
 						>
 							<div
-								class="flex items-center justify-between text-gray-600 rounded w-full group"
+								class="flex items-center justify-between text-gray-600 rounded w-full"
 								class:disabled={types.length === 3}
 								on:click={(e) => addType(e, type.type)}
 							>
@@ -258,7 +257,13 @@
 		<AddNewTypeModal close={closeAddNewTypeModal} />
 	{/if}
 	{#if showEditTypeModal}
-		<EditTypeModal {selectedType} close={() => (showEditTypeModal = false)} />
+		<EditTypeModal
+			{selectedType}
+			close={(e) => {
+				e.stopPropagation();
+				showEditTypeModal = false;
+			}}
+		/>
 	{/if}
 	<div class="flex justify-center items-center mt-6">
 		<Alert

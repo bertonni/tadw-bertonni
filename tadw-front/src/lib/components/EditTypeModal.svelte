@@ -31,7 +31,7 @@
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-
+		
 		const newType = {
 			type,
 			strong_against: strongAgainst,

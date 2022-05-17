@@ -24,6 +24,22 @@ initializeApp({
 const db = getFirestore();
 
 io.on('connection', (socket) => {
+
+  socket.emit('connected');
+  socket.on('getPokemons', (userId) => {
+    const pokemonDoc = db.collection('pokemon');
+    const pokemonObserver = pokemonDoc.doc(userId).collection('pokemons').onSnapshot((docSnapshot) => {
+      const pokemons = [];
+      docSnapshot.forEach((document) => {
+        pokemons.push(document.data());
+      });
+      socket.emit('allPokemon', (pokemons));
+    })
+    socket.on('disconnect', () => {
+      pokemonObserver();
+    })
+  })
+
   const doc = db.collection('types');
   const observer = doc.onSnapshot((docSnapshot) => {
     const types = [];
@@ -32,7 +48,7 @@ io.on('connection', (socket) => {
     });
     io.emit('types', types);
   });
-
+  
   socket.on('disconnect', () => {
     observer();
   })
@@ -80,7 +96,7 @@ const deleteType = async (type) => {
 const addPokemon = async (pokemon) => {
   const docRef = db
     .collection("pokemon")
-    .doc(pokemon.owner)
+    .doc(pokemon.trainer.id)
     .collection("pokemons");
   await docRef.doc(`${pokemon.number}`).set(pokemon);
 };
@@ -108,7 +124,6 @@ app.use(bodyParser.json());
 
 app.get("/pokemon", (req, res) => {
   getAllPokemon(req.query.owner)
-    // .then((result) => console.log(result))
     .then((result) =>
       res.send({ message: "success", data: result, nextId: result.length })
     )
@@ -141,8 +156,8 @@ app.put("/update", (req, res) => {
   res.status(200).send({ message: "Updated successfully" });
 });
 
-app.get("/pokemon/:owner/:id", (req, res) => {
-  getPokemon(req.params.owner, req.params.id)
+app.get("/pokemon/:trainer/:id", (req, res) => {
+  getPokemon(req.params.trainer, req.params.id)
     .then((result) =>
       res.send({ message: "success", data: result, nextId: result.length })
     )
@@ -150,8 +165,8 @@ app.get("/pokemon/:owner/:id", (req, res) => {
 
 });
 
-app.delete("/delete/:owner/:id", (req, res) => {
-  removePokemon(req.params.owner, req.params.id).then((result) => res.send({ message: 'removed' })).catch((error) => console.log(error));
+app.delete("/delete/:trainer/:id", (req, res) => {
+  removePokemon(req.params.trainer, req.params.id).then((result) => res.send({ message: 'removed' })).catch((error) => console.log(error));
 });
 
 server.listen(port, () => console.log(`Listening on port ${port}`));

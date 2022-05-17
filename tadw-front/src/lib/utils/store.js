@@ -4,9 +4,21 @@ import { detailedTypes } from './types';
 import { io } from "$lib/utils/socket";
 
 export const allTypesDetailed = writable([]);
+export const pokemonLength = writable(0);
 
 io.on('types', (message) => {
 	allTypesDetailed.set(message);
+});
+
+io.on('connected', () => {
+	if (get(currentUser)) {
+		io.emit('getPokemons', (get(currentUser).uid));
+	}
+});
+
+io.on('allPokemon', (pokemon) => {
+	pokemonLength.set(pokemon.length);
+	console.log('updated');
 });
 
 const storedUsers = browser && localStorage.getItem('postUsers');
@@ -27,7 +39,7 @@ export const pokeNumber = writable(storedPokeNumber ? storedPokeNumber : '1');
 export const types = writable(storedTypes ? JSON.parse(storedTypes) : pokeTypes);
 export const minTypes = writable(storedSimpleTypes ? JSON.parse(storedSimpleTypes) : simpleTypes);
 
-if (get(currentUser)?.name.length > 0) {
+if (get(currentUser)?.displayName.length > 0) {
 	console.log('logged user');
 }
 

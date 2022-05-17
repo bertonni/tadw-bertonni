@@ -19,7 +19,7 @@
 	const handleDelete = (id) => {
 		const response = confirm('Are you sure you want to delete this pokemon?');
 		if (response) {
-			fetch(`http://localhost:5000/delete/${pokemon.owner}/${id}`, { method: 'DELETE' })
+			fetch(`http://localhost:5000/delete/${pokemon.trainer.id}/${id}`, { method: 'DELETE' })
 				.then((res) => res.json())
 				.then((r) => {
 					console.log(r)
@@ -34,7 +34,7 @@
 	};
 
 	const handleUpdate = async () => {
-		const url = `http://localhost:5000/pokemon/${pokemon.owner}/${pokemon.number}`;
+		const url = `http://localhost:5000/pokemon/${pokemon.trainer.id}/${pokemon.number}`;
 		const response = await fetch(url);
 		const result = await response.json();
 		pokemon = result.data;
@@ -58,9 +58,9 @@
 		<TypeDetailsPopup type={hoveredType} />
 	{/if}
 	{#if showEditModal}
-		<EditPokemonModal on:update={handleUpdate} owner={pokemon.owner} pokemon={pokemon} close={closeModal} />
+		<EditPokemonModal on:update={handleUpdate} owner={pokemon.trainer.id} pokemon={pokemon} close={closeModal} />
 	{/if}
-	{#if $currentUser && pokemon.owner === $currentUser.email}
+	{#if $currentUser && pokemon.trainer.id === $currentUser.uid}
 		<div class="absolute flex right-4 top-2 items-center justify-end gap-2">
 			<button
 				on:click={() => handleEdit()}
@@ -92,6 +92,6 @@
 	</div>
 	<span class="absolute bottom-1 right-4 text-right text-gray-600">
 		<span class="font-bold"> Trainer:</span>
-		{pokemon.owner}
+		{pokemon.trainer.name}
 	</span>
 </div>
