@@ -1,5 +1,4 @@
 <script>
-	import { allTypes } from '$lib/utils/types';
 	import PokeBadge from './PokeBadge.svelte';
 	import { types, allTypesDetailed } from '$lib/utils/store';
 
@@ -19,7 +18,7 @@
 	});
 
 	$: {
-		const cond1 = type.length > 3;
+		const cond1 = type.length >= 3;
 		const cond2 = strongAgainst.length <= 5;
 		const cond3 = weakAgainst.length <= 5;
 		isValid = cond1 && cond2 && cond3;
@@ -39,8 +38,6 @@
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-
-		console.log('submitted');
 
 		const newType = {
 			type,

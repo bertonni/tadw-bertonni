@@ -1,8 +1,8 @@
 <script>
-	import { types } from '$lib/utils/store';
+	import { allTypesDetailed } from '$lib/utils/store';
 	export let type;
 
-	let typeDetails = $types.filter((typ) => typ.type === type)[0];
+	let typeDetails = $allTypesDetailed.filter((typ) => typ.type === type)[0];
 
 </script>
 

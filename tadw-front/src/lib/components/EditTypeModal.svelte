@@ -17,9 +17,9 @@
 	let weakAgainst = Array.from(selectedType.weak_against);
 
 	$: {
-		const cond1 = type.length > 3;
-		const cond2 = selectedType.strong_against.length <= 5;
-		const cond3 = selectedType.weak_against.length <= 5;
+		const cond1 = type.length >= 3;
+		const cond2 = strongAgainst.length <= 5;
+		const cond3 = weakAgainst.length <= 5;
 		isValid = cond1 && cond2 && cond3;
 	}
 
@@ -32,15 +32,12 @@
 	const handleSubmit = (e) => {
 		e.preventDefault();
 
-		console.log('submitted');
-
 		const newType = {
 			type,
 			strong_against: strongAgainst,
 			weak_against: weakAgainst
 		};
 
-		console.log('updated type', newType);
 		const url = 'http://localhost:5000/types/update';
 
 		fetch(url, {
@@ -52,7 +49,7 @@
 				res.json();
 			})
 			.then((result) => {
-				console.log('res', result);
+				console.log('success');
 			})
 			.catch((error) => console.log(error));
 		close();
@@ -100,7 +97,6 @@
 		hideWeak = false;
 	};
 
-	console.log(strongAgainst, weakAgainst)
 </script>
 
 <div class="bg-black bg-opacity-60 fixed inset-0 flex justify-center z-20" on:click={close}>
@@ -108,7 +104,7 @@
 		on:click={(e) => closeOptions(e)}
 		class="rounded bg-white flex flex-col px-4 py-4 max-h-[21rem] w-10/12 max-w-lg mt-10 z-30"
 	>
-		<h1 class="text-2xl font-medium text-gray-500">Add New Type</h1>
+		<h1 class="text-2xl font-medium text-gray-500">Edit Type</h1>
 		<form action="#" on:submit={(e) => handleSubmit(e)}>
 			<div class="relative z-0 mt-8 w-full group">
 				<input
@@ -181,7 +177,7 @@
 							<li
 								class="list-none text-gray-600 hover:bg-gray-200 py-1 transition-all pl-2
 									rounded hover:cursor-pointer"
-								on:click={(e) => addType(e, 'weak', type)}
+								on:click={(e) => addType(e, 'weak', type.type)}
 							>
 								{type.type}
 							</li>

@@ -19,10 +19,14 @@
 	let showEditTypeModal = false;
 	let selectedType = {};
 
-	let pokemonTypes = $allTypesDetailed.sort((a, b) => {
-		if (a.type < b.type) return -1;
-		return 1;
-	});
+	let pokemonTypes;
+
+	$: {
+		pokemonTypes = $allTypesDetailed.sort((a, b) => {
+			if (a.type < b.type) return -1;
+			return 1;
+		});
+	}
 
 	let options = [];
 
@@ -115,7 +119,20 @@
 
 	const deleteType = (e, type) => {
 		e.stopPropagation();
-
+		const url = 'http://localhost:5000/types/delete';
+		fetch(url, {
+			method: 'DELETE',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify(type)
+		})
+			.then((res) => {
+				res.json();
+			})
+			.then((result) => {
+				// success = true;
+				console.log('success');
+			})
+			.catch((error) => console.log(error));
 	};
 </script>
 
@@ -206,17 +223,17 @@
 								on:click={(e) => addType(e, type.type)}
 							>
 								<span> {type.type} </span>
-								<div
-									class="items-center text-xs gap-2 pr-2 invisible group-hover:visible"
-								>
+								<div class="items-center text-xs gap-2 pr-2 invisible group-hover:visible">
 									<span
 										class="z-10 px-2 py-1 border border-sky-600 bg-sky-400 text-gray-50
 											rounded hover:cursor-pointer hover:bg-sky-500"
-										on:click={(e) => editType(e, type)}>Edit</span>
+										on:click={(e) => editType(e, type)}>Edit</span
+									>
 									<span
 										class="z-10 px-2 py-1 border border-rose-600 bg-rose-400 text-gray-50
 											rounded hover:cursor-pointer hover:bg-rose-500"
-										on:click={(e) => deleteType(e, type)}>Delete</span>
+										on:click={(e) => deleteType(e, type)}>Delete</span
+									>
 								</div>
 							</div>
 						</div>
@@ -241,7 +258,7 @@
 		<AddNewTypeModal close={closeAddNewTypeModal} />
 	{/if}
 	{#if showEditTypeModal}
-		<EditTypeModal {selectedType} close={() => showEditTypeModal = false} />
+		<EditTypeModal {selectedType} close={() => (showEditTypeModal = false)} />
 	{/if}
 	<div class="flex justify-center items-center mt-6">
 		<Alert
