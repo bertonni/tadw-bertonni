@@ -3,7 +3,7 @@
 	import Alert from '$lib/components/Alert.svelte';
 	import EditTypeModal from '$lib/components/EditTypeModal.svelte';
 	import PokeBadge from '$lib/components/PokeBadge.svelte';
-	import { currentUser, pokeNumber, allTypesDetailed, pokemonLength } from '$lib/utils/store';
+	import { currentUser, allTypesDetailed, pokemonLength } from '$lib/utils/store';
 
 	let searchedValue = '';
 	let name = '';
@@ -48,7 +48,7 @@
 
 	const resetForm = () => {
 		name = '';
-		number = parseInt($pokeNumber);
+		number = parseInt($pokemonLength + 1);
 		level = 1;
 		types = [];
 	};
@@ -78,7 +78,7 @@
 			})
 			.then((result) => {
 				success = true;
-				pokeNumber.set($pokeNumber + 1);
+				pokeNumber.set($pokemonLength + 1);
 			})
 			.catch((error) => console.log(error));
 		resetForm();

@@ -15,7 +15,7 @@ const {
 
 const { getFirestore } = require("firebase-admin/firestore");
 
-const serviceAccount = require("./tadw-bertonni-firebase-adminsdk-qb2wh-a069484c33.json");
+const serviceAccount = require("./tadw-bertonni-firebase-adminsdk-qb2wh-3229f3dc8e.json");
 
 initializeApp({
   credential: cert(serviceAccount),
@@ -25,7 +25,8 @@ const db = getFirestore();
 
 io.on('connection', (socket) => {
 
-  socket.emit('connected');
+  socket.emit('connected', 'conectado');
+
   socket.on('getPokemons', (userId) => {
     const pokemonDoc = db.collection('pokemon');
     const pokemonObserver = pokemonDoc.doc(userId).collection('pokemons').onSnapshot((docSnapshot) => {
@@ -33,7 +34,7 @@ io.on('connection', (socket) => {
       docSnapshot.forEach((document) => {
         pokemons.push(document.data());
       });
-      socket.emit('allPokemon', (pokemons));
+      socket.emit('allPokemon', pokemons);
     })
     socket.on('disconnect', () => {
       pokemonObserver();

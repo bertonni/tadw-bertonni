@@ -18,7 +18,7 @@
 
 	let menus = [
 		{ name: 'Home', path: '/', isLogged: false },
-		{ name: 'List', path: '/pokemon/list/', isLogged: true },
+		{ name: 'List', path: '/pokemon/list', isLogged: true },
 		{ name: 'Add', path: '/pokemon/create', isLogged: true }
 		// { name: 'Signin', path: '/signin', isLogged: false }
 	];
@@ -37,9 +37,7 @@
 						class="relative py-2 font-medium transform group"
 						class:active={(currentPage.includes(item.path) && item.path !== '/') ||
 							currentPage === item.path}
-						href={item.name === 'List' && $currentUser
-							? '/pokemon/list/' + $currentUser.uid
-							: item.path}
+						href={item.path}
 					>
 						<span
 							class="absolute h-1 bottom-0 border-b-2 border-gray-300 w-0

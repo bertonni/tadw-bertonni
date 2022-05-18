@@ -1,5 +1,5 @@
 /tadw-front/node_modules
+/tadw-front/.env.local
 .vscode
 /tadw-node/node_modules
-
 /tadw-node/tadw-bertonni-firebase-*
