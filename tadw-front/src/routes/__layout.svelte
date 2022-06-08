@@ -2,19 +2,9 @@
 	import '../app.css';
 	import { currentUser } from '$lib/utils/store';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
-	import { signOut } from 'firebase/auth';
-	import { auth } from '$lib/utils/firebase';
 
 	let currentPage;
 	$: currentPage = $page.url.pathname;
-
-	const logout = () => {
-		signOut(auth)
-			.then(() => currentUser.set(null))
-			.catch((error) => console.log(error));
-		goto('/');
-	};
 
 	let menus = [
 		{ name: 'Home', path: '/', isLogged: false },

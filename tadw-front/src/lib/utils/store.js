@@ -2,8 +2,6 @@ import { browser } from '$app/env';
 import { get, writable } from 'svelte/store';
 import { detailedTypes } from './types';
 import { io } from '$lib/utils/socket';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase';
 
 
 export const allTypesDetailed = writable([]);
@@ -22,15 +20,12 @@ pokeTypes.forEach((type) => {
 export const currentUser = writable(storedCurrent ? JSON.parse(storedCurrent) : null);
 export const types = writable(storedTypes ? JSON.parse(storedTypes) : pokeTypes);
 
-onAuthStateChanged(auth, (user) => {
-	currentUser.set(user);
-});
-
 io.on('types', (message) => {
 	allTypesDetailed.set(message);
 });
 
 io.on('connected', () => {
+	console.log('conectado');
 	if (get(currentUser)) {
 		io.emit('getPokemons', get(currentUser).uid);
 	}

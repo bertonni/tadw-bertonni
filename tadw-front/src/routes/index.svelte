@@ -1,14 +1,26 @@
+<script context="module">
+	export async function load({ params, fetch }) {
+		const userData = params.userProfile;
+
+		const data = await fetch('http')
+
+		return {
+			// status: response.status,
+			props: {
+				user: userData
+			}
+		};
+	}
+</script>
+
 <script>
 	import { currentUser } from '$lib/utils/store';
-	import { signInWithPopup } from 'firebase/auth';
-	import { auth, provider } from '$lib/utils/firebase';
+	export let userProfile;
+
+	currentUser.set(userProfile);
 
 	const signInWithGoogle = () => {
-		signInWithPopup(auth, provider)
-			.then((result) => {
-				currentUser.set(result.user);
-			})
-			.catch((error) => console.log('error', error));
+		console.log('sign in logic');
 	};
 </script>
 
@@ -16,10 +28,17 @@
 
 <div class="flex justify-center mt-20">
 	{#if !$currentUser}
-		<button
+		<!-- <button
 			class="rounded bg-gradient-to-r from-sky-400 to-blue-400 px-6 py-2 text-gray-50
 				font-medium hover:from-blue-500 hover:to-sky-500 transition-all"
-			on:click={signInWithGoogle}>Sign in</button>
+			on:click={signInWithGoogle}>Sign in</button> -->
+		<a
+			href="http://localhost:5000/auth/google"
+			class="rounded bg-gradient-to-r from-sky-400 to-blue-400 px-6 py-2 text-gray-50
+				font-medium hover:from-blue-500 hover:to-sky-500 transition-all"
+		>
+			SignIn with Google
+		</a>
 	{:else}
 		<a
 			class="rounded bg-gradient-to-r from-green-400 to-emerald-400 px-6 py-2 text-gray-50
@@ -28,5 +47,6 @@
 		>
 			Add Pokemon
 		</a>
+		<!-- <h1>{$currentUser.displayName}</h1> -->
 	{/if}
 </div>

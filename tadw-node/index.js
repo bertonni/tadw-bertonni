@@ -6,7 +6,17 @@ const { Server } = require("socket.io");
 const bodyParser = require("body-parser");
 const io = new Server(server, { cors: "*" });
 const cors = require("cors");
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const session = require('express-session');
+const passport = require('passport');
 const port = 5000;
+require('dotenv').config();
+
+app.use(session({
+  resave: false,
+  saveUninitialized: true,
+  secret: 'SECRET' 
+}));
 
 const {
   initializeApp,
@@ -15,7 +25,7 @@ const {
 
 const { getFirestore } = require("firebase-admin/firestore");
 
-const serviceAccount = require("./tadw-bertonni-firebase-adminsdk-qb2wh-3229f3dc8e.json");
+const serviceAccount = require("./tadw-bertonni-firebase-adminsdk-qb2wh-a069484c33.json");
 
 initializeApp({
   credential: cert(serviceAccount),
@@ -26,6 +36,8 @@ const db = getFirestore();
 io.on('connection', (socket) => {
 
   socket.emit('connected', 'conectado');
+
+  console.log('connected');
 
   socket.on('getPokemons', (userId) => {
     const pokemonDoc = db.collection('pokemon');
@@ -53,7 +65,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     observer();
   })
-})
+});
 
 const getAllPokemon = async (owner) => {
   const snapshot = await db
@@ -122,6 +134,46 @@ const removePokemon = async (owner, id) => {
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('/success', (req, res) => res.send(userProfile));
+app.get('/error', (req, res) => res.send("error logging in"));
+
+passport.serializeUser(function(user, cb) {
+  cb(null, user);
+});
+
+passport.deserializeUser(function(obj, cb) {
+  cb(null, obj);
+});
+
+const GOOGLE_CLIENT_ID = process.env.OAUTH_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.OAUTH_CLIENT_SECRET;
+
+passport.use(new GoogleStrategy({
+    clientID: GOOGLE_CLIENT_ID,
+    clientSecret: GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:5000/auth/google/callback"
+  },
+  function(accessToken, refreshToken, profile, done) {
+      userProfile=[accessToken, refreshToken, profile];
+      return done(null, userProfile);
+  }
+));
+ 
+app.get('/auth/google', 
+// (req, res) => res.redirect('https://accounts.google.com/o/oauth2/v2/auth?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fauth%2Fgoogle%2Fcallback&scope=profile%20email&client_id=891621743981-1pu666hm3n19oa0ht3dpoajek51ou94m.apps.googleusercontent.com')
+  passport.authenticate('google', { scope : ['profile', 'email'] })
+  );
+ 
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/error' }),
+  function(req, res) {
+    // Successful authentication, redirect success.
+    res.redirect('/success');
+  });
 
 app.get("/pokemon", (req, res) => {
   getAllPokemon(req.query.owner)

@@ -1,7 +1,7 @@
 <script>
 	import Alert from '$lib/components/Alert.svelte';
 	// import { register } from '$lib/utils/firebase';
-	import { users, currentUser } from '$lib/utils/store';
+	import { currentUser } from '$lib/utils/store';
 
 	let name = '';
 	let email = '';
@@ -37,7 +37,6 @@
 			email,
 			password
 		};
-		users.set([...$users, newUser]);
 		resetForm();
 	};
 
